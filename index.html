@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commercial Quotation — Purchase Order Management System | GSLF &amp; FGSPL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#101A24;
+    --ink-soft:#4A5A68;
+    --field:#E4E9ED;
+    --paper:#FFFFFF;
+    --rule:#C6D0D8;
+    --rule-strong:#101A24;
+    --stamp:#B4322A;
+    --seal:#0E5C55;
+    --tint:#F3F6F8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--field);
+    color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;
+    font-size:14px;line-height:1.55;
+    padding:32px 16px 80px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .sheet{
+    max-width:920px;margin:0 auto;background:var(--paper);
+    border:1px solid var(--rule);
+    box-shadow:0 24px 60px -30px rgba(16,26,36,.45);
+    padding:0 0 48px;
+    position:relative;
+  }
+  .band{height:6px;background:var(--ink)}
+  .pad{padding:0 48px}
+
+  /* ---------- masthead ---------- */
+  .masthead{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding-top:36px;padding-bottom:24px}
+  .mark{display:flex;gap:12px;align-items:center}
+  .mark .glyph{
+    width:46px;height:46px;border:2px solid var(--ink);display:grid;place-items:center;
+    font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:18px;letter-spacing:-1px;
+  }
+  .mark .who{font-family:"IBM Plex Sans Condensed",sans-serif;font-weight:700;font-size:17px;letter-spacing:.02em;text-transform:uppercase}
+  .mark .role{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase}
+  .doctype{text-align:right}
+  .doctype h1{font-family:"IBM Plex Sans Condensed",sans-serif;font-size:15px;letter-spacing:.18em;text-transform:uppercase;font-weight:700}
+  .doctype .sub{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-soft);letter-spacing:.06em;margin-top:4px}
+
+  /* ---------- title ---------- */
+  .title{border-top:2px solid var(--rule-strong);border-bottom:1px solid var(--rule);padding:26px 0 22px}
+  .title .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--stamp);font-weight:600}
+  .title h2{font-family:"IBM Plex Sans Condensed",sans-serif;font-size:38px;line-height:1.05;font-weight:700;margin-top:8px;letter-spacing:-.01em}
+  .title p{color:var(--ink-soft);margin-top:10px;max-width:62ch}
+
+  /* ---------- meta grid (PO-style) ---------- */
+  .meta{display:grid;grid-template-columns:repeat(4,1fr);border-left:1px solid var(--rule);border-top:1px solid var(--rule)}
+  .meta div{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:12px 14px}
+  .meta .k{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+  .meta .v{font-weight:600;font-size:13.5px;margin-top:3px}
+  .meta .v.mono{font-family:"IBM Plex Mono",monospace;font-weight:500}
+
+  /* ---------- sections ---------- */
+  section{margin-top:38px}
+  .shead{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--rule-strong);padding-bottom:7px;margin-bottom:18px}
+  .shead .no{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:12px;color:var(--stamp)}
+  .shead h3{font-family:"IBM Plex Sans Condensed",sans-serif;font-size:16px;text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+  .shead .note{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-soft);letter-spacing:.05em}
+  p.lead{color:var(--ink-soft);max-width:76ch}
+  p.lead + p.lead{margin-top:10px}
+
+  /* edge card — the differentiator */
+  .edge{border:1px solid var(--rule);border-left:4px solid var(--seal);background:var(--tint);padding:16px 18px;margin-top:16px}
+  .edge b{display:block;font-family:"IBM Plex Sans Condensed",sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:12.5px;margin-bottom:6px}
+  .edge p{color:var(--ink-soft);font-size:13.5px}
+
+  /* stack table */
+  table{width:100%;border-collapse:collapse}
+  .stack td{border:1px solid var(--rule);padding:10px 14px;width:50%;vertical-align:top}
+  .stack .lbl{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);display:block}
+  .stack .val{font-weight:600;margin-top:2px}
+
+  /* scope modules */
+  .modules{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--rule);border-left:1px solid var(--rule)}
+  .mod{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:14px 16px}
+  .mod h4{font-family:"IBM Plex Sans Condensed",sans-serif;font-size:13.5px;text-transform:uppercase;letter-spacing:.05em;display:flex;gap:8px;align-items:baseline}
+  .mod h4 span{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--stamp);font-weight:600}
+  .mod ul{list-style:none;margin-top:8px}
+  .mod li{font-size:12.8px;color:var(--ink-soft);padding-left:16px;position:relative;margin-top:3px}
+  .mod li::before{content:"—";position:absolute;left:0;color:var(--rule);}
+
+  /* screens */
+  .screens{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .screens span{font-family:"IBM Plex Mono",monospace;font-size:11px;border:1px solid var(--rule);padding:5px 9px;color:var(--ink-soft)}
+
+  /* timeline */
+  .tl{width:100%;border-collapse:collapse;margin-top:4px}
+  .tl th{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);text-align:left;padding:8px 14px;border-bottom:1px solid var(--rule-strong)}
+  .tl th:last-child,.tl td:last-child{text-align:right}
+  .tl td{padding:11px 14px;border-bottom:1px solid var(--rule)}
+  .tl td:first-child{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--stamp);width:44px}
+  .tl td.dur{font-family:"IBM Plex Mono",monospace;font-weight:500;white-space:nowrap}
+  .tl tr.tot td{border-bottom:none;border-top:2px solid var(--rule-strong);font-weight:700;padding-top:12px}
+
+  /* invoice-style costing */
+  .cost th{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);text-align:left;padding:8px 14px;border-bottom:1px solid var(--rule-strong)}
+  .cost th:last-child,.cost td:last-child{text-align:right}
+  .cost td{padding:12px 14px;border-bottom:1px solid var(--rule)}
+  .cost .desc small{display:block;color:var(--ink-soft);font-size:12px;margin-top:2px}
+  .cost .amt{font-family:"IBM Plex Mono",monospace;font-weight:600;white-space:nowrap}
+  .cost tr.grand td{background:var(--ink);color:#fff;border-bottom:none;font-weight:700;font-size:15px}
+  .cost tr.grand .amt{font-size:17px}
+  .words{border:1px solid var(--rule);border-top:none;padding:11px 14px;display:flex;gap:10px;align-items:baseline;background:var(--tint)}
+  .words .k{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);white-space:nowrap}
+  .words .v{font-weight:600;font-size:13px;font-style:italic}
+
+  ul.plain{list-style:none;margin-top:6px}
+  ul.plain li{padding-left:18px;position:relative;color:var(--ink-soft);margin-top:6px;max-width:80ch}
+  ul.plain li::before{content:"▪";position:absolute;left:0;color:var(--stamp);font-size:11px;top:1px}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+
+  /* signature + stamp — the signature element */
+  .close{margin-top:44px;border-top:2px solid var(--rule-strong);padding-top:26px;display:flex;justify-content:space-between;align-items:flex-end;gap:30px}
+  .sign{flex:1}
+  .sign .line{border-bottom:1px solid var(--ink);height:44px;max-width:280px}
+  .sign .nm{font-weight:700;margin-top:8px}
+  .sign .rl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-soft);letter-spacing:.05em;text-transform:uppercase}
+  .stampbox{
+    border:2px solid var(--stamp);color:var(--stamp);padding:12px 18px;text-align:center;
+    transform:rotate(-6deg);flex:0 0 auto;
+    font-family:"IBM Plex Sans Condensed",sans-serif;
+  }
+  .stampbox .b{font-size:19px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;line-height:1.1}
+  .stampbox .s{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.08em;margin-top:4px;text-transform:uppercase}
+  .stampbox .d{border-top:1px solid var(--stamp);margin-top:6px;padding-top:4px;font-family:"IBM Plex Mono",monospace;font-size:10px}
+
+  footer{margin-top:34px;border-top:1px solid var(--rule);padding-top:14px;font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--ink-soft);letter-spacing:.04em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+  /* PDF button */
+  .actions{position:sticky;bottom:22px;display:flex;justify-content:center;margin-top:28px;z-index:20}
+  button{
+    font-family:"IBM Plex Sans Condensed",sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+    background:var(--ink);color:#fff;border:none;padding:15px 28px;cursor:pointer;
+    box-shadow:0 12px 28px -10px rgba(16,26,36,.7);display:flex;align-items:center;gap:10px;
+    transition:background .15s ease, transform .15s ease;
+  }
+  button:hover{background:var(--stamp);transform:translateY(-1px)}
+  button:focus-visible{outline:3px solid var(--seal);outline-offset:3px}
+
+  @media (max-width:760px){
+    body{padding:0 0 60px}
+    .sheet{border:none;box-shadow:none}
+    .pad{padding:0 20px}
+    .masthead{flex-direction:column;gap:14px}
+    .doctype{text-align:left}
+    .title h2{font-size:27px}
+    .meta{grid-template-columns:1fr 1fr}
+    .modules{grid-template-columns:1fr}
+    .two{grid-template-columns:1fr;gap:20px}
+    .close{flex-direction:column;align-items:flex-start}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  @page{size:A4;margin:10mm 0}
+  @media print{
+    body{background:#fff;padding:0;font-size:10.5pt}
+    .sheet{box-shadow:none;border:none;max-width:none;padding:0 0 14mm}
+    .pad{padding:0 14mm}
+    .band{height:8px}
+    .actions{display:none}
+    .masthead{padding-top:22px}
+    section{break-inside:avoid;margin-top:22px}
+    .mod,.close,.cost,.tl{break-inside:avoid}
+    .cost tr.grand td{background:var(--ink)!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .band,.stampbox,.edge,.words,.title .eyebrow,.shead .no,.mod h4 span{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+  <div class="band"></div>
+  <div class="pad">
+
+    <div class="masthead">
+      <div class="mark">
+        <div class="glyph">TD</div>
+        <div>
+          <div class="who">Tejas Dubal</div>
+          <div class="role">Software Engineering &amp; Delivery</div>
+        </div>
+      </div>
+      <div class="doctype">
+        <h1>Commercial Quotation</h1>
+        <div class="sub">Confidential · For client evaluation only</div>
+      </div>
+    </div>
+
+    <div class="title">
+      <div class="eyebrow">Proposal · Software Development Engagement</div>
+      <h2>Purchase Order<br>Management System</h2>
+      <p>A web-based platform covering the full purchase order lifecycle — vendor master, multi-organisation setup, PO creation with GST logic, approvals, branded PDF output, reporting and deployment. Built for GSLF and FGSPL as a single system across desktop and mobile.</p>
+    </div>
+
+    <div class="meta">
+      <div><div class="k">Quotation No.</div><div class="v mono">TD/2026/PO-01</div></div>
+      <div><div class="k">Date of Issue</div><div class="v mono">13 July 2026</div></div>
+      <div><div class="k">Valid Until</div><div class="v mono">27 July 2026</div></div>
+      <div><div class="k">Currency</div><div class="v mono">INR (₹)</div></div>
+      <div><div class="k">Prepared For</div><div class="v">Grey Sim Learning Foundation</div></div>
+      <div><div class="k">Also Covering</div><div class="v">FGSPL</div></div>
+      <div><div class="k">Prepared By</div><div class="v">Tejas Dubal</div></div>
+      <div><div class="k">Engagement Type</div><div class="v">Fixed Scope · Fixed Price</div></div>
+    </div>
+
+    <!-- 1 -->
+    <section>
+      <div class="shead"><span class="no">1.0</span><h3>Overview</h3></div>
+      <p class="lead">This proposal covers a Purchase Order Management System for GSLF and FGSPL. Both organisations operate under one login, each with its own GSTIN, CIN, logo and signatory, so a PO raised under either entity carries the correct legal identity on the printed document.</p>
+      <p class="lead">The system handles vendors, purchase orders, CGST/SGST/IGST computation with automatic intra-state and inter-state detection, PO status tracking from draft through paid, branded PDF generation, and Excel/PDF reporting — accessible from a browser on desktop or phone, installable as an app.</p>
+
+      <div class="edge">
+        <b>Why this build is lower risk for GSLF</b>
+        <p>This system will be built on Next.js, FastAPI and PostgreSQL — the same stack GSLF's Counselling &amp; Student Lifecycle Management System already runs on. That means one technology footprint for your team to maintain, one deployment approach to learn, a shared authentication pattern, and the option to bring both systems under a single GSLF platform later without a rewrite. No second stack, no integration debt.</p>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section>
+      <div class="shead"><span class="no">2.0</span><h3>Technology Stack</h3><span class="note">Aligned with existing GSLF systems</span></div>
+      <table class="stack">
+        <tr>
+          <td><span class="lbl">Frontend</span><span class="val">Next.js (React) + Tailwind CSS</span></td>
+          <td><span class="lbl">Backend</span><span class="val">Python 3 · FastAPI</span></td>
+        </tr>
+        <tr>
+          <td><span class="lbl">Database</span><span class="val">PostgreSQL</span></td>
+          <td><span class="lbl">API</span><span class="val">REST · auto-generated OpenAPI docs</span></td>
+        </tr>
+        <tr>
+          <td><span class="lbl">PDF Engine</span><span class="val">ReportLab / WeasyPrint</span></td>
+          <td><span class="lbl">Excel Export</span><span class="val">OpenPyXL</span></td>
+        </tr>
+        <tr>
+          <td><span class="lbl">Deployment</span><span class="val">Docker · Nginx · Uvicorn/Gunicorn</span></td>
+          <td><span class="lbl">Access</span><span class="val">Installable web app (desktop + mobile)</span></td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- 3 -->
+    <section>
+      <div class="shead"><span class="no">3.0</span><h3>Scope of Work</h3><span class="note">14 modules · all included</span></div>
+      <div class="modules">
+        <div class="mod"><h4><span>01</span>Authentication &amp; Roles</h4><ul>
+          <li>Secure login and session handling</li><li>Admin and standard user roles</li><li>Password policy and reset flow</li><li>Activity trail on key actions</li></ul></div>
+
+        <div class="mod"><h4><span>02</span>Multi-Organisation Core</h4><ul>
+          <li>GSLF and FGSPL as separate entities</li><li>GSTIN, CIN, address and logo per entity</li><li>Default signatory per organisation</li><li>Entity switcher in the header</li></ul></div>
+
+        <div class="mod"><h4><span>03</span>Vendor Master</h4><ul>
+          <li>Add, edit, archive vendors</li><li>Vendor categories</li><li>GSTIN and PAN capture with validation</li><li>Bank account details</li><li>Search across all vendor fields</li></ul></div>
+
+        <div class="mod"><h4><span>04</span>Vendor Dashboard</h4><ul>
+          <li>Recent POs per vendor</li><li>Spend and outstanding per vendor</li><li>Filter by category</li><li>Quick jump to raise a new PO</li></ul></div>
+
+        <div class="mod"><h4><span>05</span>Purchase Order Lifecycle</h4><ul>
+          <li>Create, edit, duplicate, cancel</li><li>Auto PO numbering per organisation</li><li>Draft → Generated → Approved</li><li>Paid / Unpaid / Cancelled tracking</li></ul></div>
+
+        <div class="mod"><h4><span>06</span>GST Computation</h4><ul>
+          <li>CGST, SGST and IGST rules</li><li>Auto intra-state vs inter-state detection</li><li>Per-line tax rates</li><li>Amount in words on every PO</li></ul></div>
+
+        <div class="mod"><h4><span>07</span>Line Items</h4><ul>
+          <li>Unlimited rows per PO</li><li>HSN / SAC code field</li><li>Quantity, unit, rate, discount</li><li>Live totals as you type</li></ul></div>
+
+        <div class="mod"><h4><span>08</span>Branded PDF Output</h4><ul>
+          <li>Organisation logo and letterhead</li><li>GSTIN and CIN printed on document</li><li>Signature block with signatory name</li><li>Terms and conditions section</li><li>Download or share the PDF</li></ul></div>
+
+        <div class="mod"><h4><span>09</span>Reports</h4><ul>
+          <li>PO register with date-range filters</li><li>Vendor-wise and category-wise spend</li><li>Paid vs unpaid ledger</li><li>Export to Excel and PDF</li></ul></div>
+
+        <div class="mod"><h4><span>10</span>Executive Dashboard</h4><ul>
+          <li>Total vendors and total POs</li><li>Value paid vs value pending</li><li>Monthly spend trend chart</li><li>Recent activity feed</li></ul></div>
+
+        <div class="mod"><h4><span>11</span>System Settings</h4><ul>
+          <li>Editable terms and conditions</li><li>Organisation details and numbering format</li><li>User management</li><li>Categories and units master</li></ul></div>
+
+        <div class="mod"><h4><span>12</span>REST API</h4><ul>
+          <li>Endpoints for organisations and vendors</li><li>Purchase order endpoints</li><li>Token-based authentication</li><li>Interactive API documentation</li></ul></div>
+
+        <div class="mod"><h4><span>13</span>Deployment</h4><ul>
+          <li>Dockerised build</li><li>Nginx reverse proxy setup</li><li>Automated database backups</li><li>Environment and runbook documentation</li></ul></div>
+
+        <div class="mod"><h4><span>14</span>Handover</h4><ul>
+          <li>Full source code, commented</li><li>User manual for the finance team</li><li>Admin and setup README</li><li>One live walkthrough session</li></ul></div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section>
+      <div class="shead"><span class="no">4.0</span><h3>Application Screens</h3><span class="note">16 views</span></div>
+      <div class="screens">
+        <span>Login</span><span>Dashboard</span><span>Organisation Switch</span><span>Vendor Dashboard</span>
+        <span>Vendor Master</span><span>Vendor Categories</span><span>Create PO</span><span>Edit PO</span>
+        <span>PO Details</span><span>PDF Preview</span><span>Reports</span><span>Users</span>
+        <span>Organisation Settings</span><span>Terms &amp; Conditions</span><span>Profile</span><span>System Settings</span>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section>
+      <div class="shead"><span class="no">5.0</span><h3>Delivery Schedule</h3></div>
+      <table class="tl">
+        <tr><th></th><th>Phase</th><th>Duration</th></tr>
+        <tr><td>01</td><td>Requirement lock, database design and UI structure</td><td class="dur">7 working days</td></tr>
+        <tr><td>02</td><td>Core build — auth, organisations, vendors, PO engine, GST, PDF</td><td class="dur">32 working days</td></tr>
+        <tr><td>03</td><td>Reports, dashboard, API, testing and fixes</td><td class="dur">8 working days</td></tr>
+        <tr><td>04</td><td>Deployment, data setup, training and handover</td><td class="dur">5 working days</td></tr>
+        <tr class="tot"><td></td><td>Total estimated duration</td><td class="dur">52 working days</td></tr>
+      </table>
+      <p class="lead" style="margin-top:12px;font-size:13px">Timeline starts from the date of advance payment and receipt of GSLF/FGSPL letterhead assets, GSTIN details and a sample signed PO for format reference.</p>
+    </section>
+
+    <!-- 6 -->
+    <section>
+      <div class="shead"><span class="no">6.0</span><h3>Commercials</h3></div>
+      <table class="cost">
+        <tr><th>Description</th><th>Amount</th></tr>
+        <tr>
+          <td class="desc">Purchase Order Management System — end-to-end development<small>All 14 modules, 16 screens, source code, deployment and handover</small></td>
+          <td class="amt">₹1,24,999</td>
+        </tr>
+        <tr>
+          <td class="desc">Post-delivery support — 60 days<small>Bug fixes and corrections at no cost, from date of go-live</small></td>
+          <td class="amt">Included</td>
+        </tr>
+        <tr>
+          <td class="desc">GST<small>As applicable at prevailing rates</small></td>
+          <td class="amt">At actuals</td>
+        </tr>
+        <tr class="grand"><td>Total project value</td><td class="amt">₹1,24,999</td></tr>
+      </table>
+      <div class="words">
+        <span class="k">Amount in words</span>
+        <span class="v">Rupees One Lakh Twenty Four Thousand Nine Hundred Ninety Nine Only</span>
+      </div>
+
+      <div class="two" style="margin-top:26px">
+        <div>
+          <div class="shead" style="border-bottom-width:1px"><h3 style="font-size:13px">Payment Milestones</h3></div>
+          <table class="tl">
+            <tr><td>01</td><td>On confirmation / project start</td><td class="dur">40%</td></tr>
+            <tr><td>02</td><td>On core modules demo (PO + GST + PDF)</td><td class="dur">40%</td></tr>
+            <tr><td>03</td><td>On deployment and sign-off</td><td class="dur">20%</td></tr>
+          </table>
+        </div>
+        <div>
+          <div class="shead" style="border-bottom-width:1px"><h3 style="font-size:13px">Optional, After Support Period</h3></div>
+          <table class="tl">
+            <tr><td>—</td><td>Annual maintenance (monthly)</td><td class="dur">₹5,000 / month</td></tr>
+            <tr><td>—</td><td>New features / change requests</td><td class="dur">₹600 / hour</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section>
+      <div class="shead"><span class="no">7.0</span><h3>Not Included</h3></div>
+      <ul class="plain">
+        <li>Server, domain, SSL certificate and cloud hosting charges — billed directly to GSLF by the provider. Deployment and configuration on your environment is included.</li>
+        <li>Third-party email or SMS service charges and API keys.</li>
+        <li>Ongoing server administration, monitoring and infrastructure upkeep after handover, unless the maintenance option above is taken.</li>
+        <li>Integration with Tally, Zoho Books or any accounting software — can be quoted separately if required.</li>
+        <li>Migration of historical purchase order data, unless provided in a clean spreadsheet format.</li>
+      </ul>
+    </section>
+
+    <!-- 8 -->
+    <section>
+      <div class="shead"><span class="no">8.0</span><h3>Terms</h3></div>
+      <ul class="plain">
+        <li>Scope is fixed as listed in section 3.0. Additions requested mid-build will be quoted separately and will not delay the agreed milestones.</li>
+        <li>Business rules — approval thresholds, PO numbering format, terms text and tax treatment — will be confirmed by GSLF before the core build begins.</li>
+        <li>Full source code and database ownership transfers to GSLF on final payment.</li>
+        <li>This quotation is valid for 15 days from the date of issue.</li>
+      </ul>
+    </section>
+
+    <div class="close">
+      <div class="sign">
+        <div class="line"></div>
+        <div class="nm">Tejas Dubal</div>
+        <div class="rl">Developer · Proposal issued 13 July 2026</div>
+      </div>
+      <div class="stampbox">
+        <div class="b">Quotation</div>
+        <div class="s">GSLF &amp; FGSPL · PO System</div>
+        <div class="d">Valid till 27.07.2026</div>
+      </div>
+    </div>
+
+    <footer>
+      <span>TD/2026/PO-01 · Purchase Order Management System</span>
+      <span>Confidential — prepared for GSLF &amp; FGSPL</span>
+    </footer>
+
+  </div>
+</div>
+
+<div class="actions">
+  <button onclick="window.print()" aria-label="Download this quotation as PDF">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" aria-hidden="true">
+      <path d="M12 3v12M6 11l6 6 6-6M4 21h16"/>
+    </svg>
+    Download PDF
+  </button>
+</div>
+
+</body>
+</html>
